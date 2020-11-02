@@ -19,7 +19,7 @@ def attention(Q, K, V):
     attention = torch.matmul(softmax, V)
     return attention
 
-class SelfAttention(nn.Module):
+class SelfAttentionWide(nn.Module):
     def __init__(self, emb_dim, num_heads):
         super().__init__()
         # we want to output the same dim as embedding to enable residual connection
@@ -37,10 +37,25 @@ class SelfAttention(nn.Module):
         multi_att = attention(Q, K, V)
         return self.M_merge_heads(multi_att)
         
-
+class Encoder(nn.Module):
+    def __init__(self, emb_dim, num_heads):
+        super().__init__()
+        self.attention_layer = SelfAttentionWide(emb_dim, num_heads)
+        self.layernorm1 = nn.LayerNorm(emb_dim)
+        self.layernorm2 = nn.LayerNorm(emb_dim)
+        # this can be pretty much any mlp we want
+        self.mlp = nn.Sequential(nn.Linear(emb_dim, emb_dim), nn.ReLU())
+        
+    def forward(self, x):
+        x = x + self.attention_layer(x)
+        x = self.layernorm1(x)
+        x = x + self.mlp(x)
+        return self.layernorm2(x)
+        
+        
 if __name__ == '__main__':
     Q = Variable(torch.rand(20, 50))
     K = Variable(torch.rand(20, 50))
-    V = Variable(torch.rand(20, 1))
+    V = Variable(torch.rand(20, 50))
     a = attention(Q, K, V)
     print(a)
