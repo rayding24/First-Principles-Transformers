@@ -7,7 +7,7 @@ from torch import einsum
 
 
 
-class Encoder(nn.Module):
+class EncoderBlock(nn.Module):
     def __init__(self, emb_dim, num_heads):
         super().__init__()
         self.attention_layer = SelfAttentionWide(emb_dim, num_heads)
