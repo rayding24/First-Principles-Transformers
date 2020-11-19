@@ -11,7 +11,7 @@ rayding2011@gmail.com
 Sept. 2020
 '''
 
-def attention(Q, K, V):
+def attention(Q, K, V): 
     ''' Functional implementation for scaled dot product attention formula'''
     dot_prod = torch.matmul(Q, torch.transpose(K, -2, -1)) #swap last 2 dims, regardless of batch dim
     K_dim = K.size(-1)
@@ -19,6 +19,7 @@ def attention(Q, K, V):
     attention = torch.matmul(softmax, V)
     return attention
 
+        
 class SelfAttentionWide(nn.Module):
     def __init__(self, emb_dim, num_heads):
         super().__init__()
@@ -31,13 +32,11 @@ class SelfAttentionWide(nn.Module):
         
     def forward(self, x):
         # get Q, K, V
-        Q = x@self.M_Q
-        K = x@self.M_K
-        V = x@self.M_V 
+        Q = self.M_Q(x)
+        K = self.M_K(x)
+        V = self.M_V(x)
         multi_att = attention(Q, K, V)
         return self.M_merge_heads(multi_att)
-        
-
         
         
 if __name__ == '__main__':
