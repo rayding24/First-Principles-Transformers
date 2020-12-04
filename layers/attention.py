@@ -11,10 +11,12 @@ rayding2011@gmail.com
 Sept. 2020
 '''
 
-def attention(Q, K, V): 
-    ''' Functional implementation for scaled dot product attention formula'''
+def attention(Q, K, V, mask=None): 
+    ''' Functional implementation for scaled dot product attention formula with optional binary mask'''
     dot_prod = torch.matmul(Q, torch.transpose(K, -2, -1)) #swap last 2 dims, regardless of batch dim
     K_dim = K.size(-1)
+    if mask:
+        dot_prod[mask] = float('-inf') # proper mask for batch?
     softmax = F.softmax(dot_prod/math.sqrt(K_dim), dim = -1)
     attention = torch.matmul(softmax, V)
     return attention
@@ -45,3 +47,6 @@ if __name__ == '__main__':
     V = Variable(torch.rand(20, 50))
     a = attention(Q, K, V)
     print(a)
+    
+    
+    #experiment
