@@ -53,5 +53,28 @@ class MultiheadedSelfAttention(nn.Module):
     
     
     
+class Block(nn.Module):
     
+    def __init__(self, config):
+        super().__init__()
+        self.ln1 = nn.LayerNorm(config.n_embd)
+        self.ln2 = nn.LayerNorm(config.n_embd)
+        self.attn = MultiheadedSelfAttention(config)
+        self.mlp = nn.Sequential(
+            nn.Linear(config.n_embd, 5*config.n_embd),
+            nn.GELU(),
+            nn.Linear(5*config.n_embd, config.n_embd),
+            nn.Dropout(config.resid_pdrop)
+        )
         
+    def forward(self, x):
+        '''
+        The original minGPT implementation seems to be somewhat off
+        compared to the Decoder Archetecture from the GPT paper
+        So here is my version:
+        '''
+        x = x + self.attn(x)
+        x = self.ln1(x)
+        x = x + self.mlp(x)
+        x = self.ln2(x)
+        return x 
