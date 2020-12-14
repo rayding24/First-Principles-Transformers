@@ -4,7 +4,7 @@ First Principles Transformers-Vanilla2SOTA
 
 
 # Biblio:
-The author wish to express sincere gratitude towards the following sources, without which this journey would have taken much longer and been more difficult.
+The author wish to express sincere gratitude towards the following sources.
 
 ## Original papers:
 
