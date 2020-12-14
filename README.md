@@ -9,9 +9,9 @@ The author wish to express sincere gratitude towards the following sources, with
 ## Original papers:
 
 ## Folders:
-_minGPT and _fullGPT are mostly adapted from, respectively,
-karpathy/minGPT:https://github.com/karpathy/minGPT/blob/master
-tingkai-zhang/openai-gpt-pytorch (which is modified from HuggingFace's gpt models):
+_minGPT and _fullGPT are mostly adapted from, respectively,  
+karpathy/minGPT:https://github.com/karpathy/minGPT/blob/master  
+tingkai-zhang/openai-gpt-pytorch (which is modified from HuggingFace's gpt models):  
 https://github.com/tingkai-zhang/openai-gpt-pytorch
 
 ## The following material has been very inspirational and helpful for understanding transformers better:
