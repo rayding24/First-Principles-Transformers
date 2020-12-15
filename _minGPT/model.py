@@ -15,6 +15,7 @@ class MultiheadedSelfAttention(nn.Module):
         # projections
         self.n_embd = config.n_embd
         self.n_head = config.n_head
+        # TODO: bias should be false here, does it make a diff. in performance though?
         self.key = nn.Linear(self.n_embd,  self.n_embd)
         self.query = nn.Linear( self.n_embd,  self.n_embd)
         self.value = nn.Linear( self.n_embd,  self.n_embd)
@@ -78,3 +79,59 @@ class Block(nn.Module):
         x = x + self.mlp(x)
         x = self.ln2(x)
         return x 
+    
+class GPT(nn.Module):
+    
+    def __init__(self, config):
+        super().__init__()
+        # embedding
+        self.tok_emb = nn.Embedding(config.vocab_size, config.n_embd)
+        self.pos_emb = nn.Parameter(torch.zeros(1, config.block_size, config.n_embd))
+        self.drop = nn.Dropout(config.embd_pdrop)
+        
+        
+        # transformer
+        self.blocks = nn.Sequential(*[Block(config) for _ in range(config.n_layer) ])
+        
+        # head
+        self.ln = nn.LayerNorm(config.n_embd)
+        self.head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
+        
+        self.apply(self._init_weights)
+        
+        
+    def _init_weights(self, module):
+        ''' 
+        Not really necessary when Kaiming He does it for you :P but good practice nonetheless
+        '''
+        if isinstance(module, (nn.Linear, nn.Embedding)):
+            module.weight.data.normal_(mean=0.0, std=0.02)
+            if isinstance(module, nn.Linear) and module.bias is not None:
+                module.bias.data.zero_()
+                
+        elif isinstance(module, nn.LayerNorm):
+            module.bias.data.zero_()
+            module.weight.data.fill_(1.0)
+            
+            
+    def forward(self, idx, targets=None):
+        b, t = idx.size() # index for words
+        
+        assert t <= self.block_size, 'cannot forward, model block size is exhausted, wtf does this mean???'
+        
+        token_embeddings = self.tok_emb(idx) # index to vec
+        positional_embeddings = self.pos_emb[:, :t, :] #wtf is this?? pos emb straight from Parameter??
+        x = token_embeddings+positional_embeddings
+        x = self.drop(x)
+        x = self.blocks(x)
+        x = self.ln_f(x)
+        logits = self.head(x) # what does this head do exactly??
+        
+        if targets is not None:
+            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
+        else:
+            loss = None  
+            
+        return logits, loss 
+        
+        
