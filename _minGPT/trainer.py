@@ -2,6 +2,15 @@ import math
 
 import torch
 
+import logging
+
+from tqdm import tqdm
+import numpy as np
+
+import torch.optim as optim
+from torch.utils.data.dataloader import DataLoader
+
+logger = logging.getLogger('my logger')
 
 class Trainer:
     
@@ -25,7 +34,7 @@ class Trainer:
         torch.save(raw_model.state_dict(), sefl.config.ckpt_path)
 
     def train(self):
-        model, config = self.model, self.config 
+        model, config = self.model, self.config gg
         device = self.device
         raw_model = model.module if hasattr(self.model, 'module') else model # must we get module?
         # optimizer = raw_model.configure_
