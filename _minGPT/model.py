@@ -115,7 +115,7 @@ class GPT(nn.Module):
             
             
     def forward(self, idx, targets=None):
-        b, t = idx.size() # index for words
+        _, t = idx.size() # index for words
         
         assert t <= self.block_size, 'cannot forward, model block size is exhausted, wtf does this mean???'
         
