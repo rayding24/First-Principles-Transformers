@@ -137,12 +137,15 @@ class GPT(nn.Module):
         
 class GPTConfig:
     
-    def __init__(self, vocab_size, block_size, embd_pdrop=0.1, resid_pdrop=0.1, attn_pdrop=0.1, **kwargs):
+    def __init__(self, vocab_size, block_size, embd_pdrop=0.1, resid_pdrop=0.1, attn_pdrop=0.1,
+    max_grad_clip_norm=100, **kwargs):
         self.vocab_size = vocab_size
         self.block_size = block_size
         self.embd_pdrop = embd_pdrop
         self.resid_pdrop = resid_pdrop
         self.attn_pdrop = attn_pdrop 
+        self.max_grad_clip_norm = max_grad_clip_norm
+
         for k,v in kwargs.items():
             setattr(self, k, v)
             
