@@ -111,6 +111,23 @@ class Trainer:
                 self.save_checkpoint()
         
 
+class TrainerConfig:
+    # use the same initialization as the original minGPT 
+    max_epochs = 10
+    batch_size = 64
+    learning_rate = 3e-4
+    betas = (0.9, 0.95)
+    grad_norm_clip = 1.0
+
+    lr_decay = False
+    warmup_tokens = 375e6 
+    final_tokens = 260e9 
+    ckpt_path = None
+    num_workers = 0 
+
+    def __init__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self, k, v)
 
 
 
