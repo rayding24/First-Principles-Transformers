@@ -20,8 +20,8 @@ class MultiheadedSelfAttention(nn.Module):
         self.query = nn.Linear( self.n_embd,  self.n_embd)
         self.value = nn.Linear( self.n_embd,  self.n_embd)
         # regularization by dropout
-        self.attn_drop = nn.Dropout(config.attn_drop)
-        self.resid_drop = nn.Dropout(config.resid_drop)
+        self.attn_drop = nn.Dropout(config.attn_pdrop)
+        self.resid_drop = nn.Dropout(config.resid_pdrop)
         # why need output projection??
         self.proj = nn.Linear(self.n_embd, self.n_embd)
         
@@ -45,7 +45,7 @@ class MultiheadedSelfAttention(nn.Module):
         
         att = att.masked_fill(self.mask[:,:,:T,:T] == 0, float('-inf')) #TODO: this is weird, replace with att[mask] = -inf
         att = F.softmax(att, dim=-1) # not intuitive but from vector math is
-        att = self.attn_drop(att, dim=-1)
+        att = self.attn_drop(att)
         y = att @ v 
         y = y.transpose(1,2).contiguous().view(B,T,C)
         
@@ -96,7 +96,8 @@ class GPT(nn.Module):
         # head
         self.ln = nn.LayerNorm(config.n_embd)
         self.head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        
+        self.block_size = config.block_size
+
         self.apply(self._init_weights)
         
         
@@ -124,7 +125,7 @@ class GPT(nn.Module):
         x = token_embeddings+positional_embeddings
         x = self.drop(x)
         x = self.blocks(x)
-        x = self.ln_f(x)
+        x = self.ln(x)
         logits = self.head(x) # what does this head do exactly??
         
         if targets is not None:

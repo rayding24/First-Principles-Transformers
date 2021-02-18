@@ -28,13 +28,13 @@ class Trainer:
         # parallelize batch, not specifying ids??    
         self.model = torch.nn.DataParallel(self.model).to(self.device) 
 
-    def save_checkpoint(self):
+    def save_checkpoint(self, ckpt_path):
         raw_model = self.model.module if hasattr(self.model, 'module') else self.model 
-        logger.info(f'Saved to: {self.config.ckpt_path}')
-        torch.save(raw_model.state_dict(), sefl.config.ckpt_path)
+        logger.info(f'Saved to: {ckpt_path}')
+        torch.save(raw_model.state_dict(),ckpt_path)
 
     def train(self):
-        model, config = self.model, self.config gg
+        model, config = self.model, self.config
         device = self.device
         raw_model = model.module if hasattr(self.model, 'module') else model # must we get module?
         # optimizer = raw_model.configure_
@@ -43,12 +43,12 @@ class Trainer:
         def run_epoch(training_stage=True):
             model.train(training_stage)
             data = self.train_dataset if training_stage else self.test_dataset
-            loader = DataLoader(data, shuffle=True, pin_memeory=True, batch_size=config.batch_size, num_workers=config.num_workers)
+            loader = DataLoader(data, shuffle=True, batch_size=config.batch_size, num_workers=config.num_workers)
 
             losses = []
 
             pbar = tqdm(enumerate(loader), total=len(loader)) if training_stage else enumerage(loader)
-            for it, x, y in pbar:
+            for it, (x, y) in pbar:
 
                 x,y = x.to(device), y.to(device)
 
@@ -108,7 +108,7 @@ class Trainer:
             is_curr_best_model = self.test_dataset is None or test_loss < best_loss
             if self.config.ckpt_path is not None and is_curr_best_model:
                 best_loss = test_loss 
-                self.save_checkpoint()
+                self.save_checkpoint(f'./models/GPT_epoch_{epoch}_test_loss_{round(test_loss, 3)}.pth')
         
 
 class TrainerConfig:
@@ -122,8 +122,9 @@ class TrainerConfig:
     lr_decay = False
     warmup_tokens = 375e6 
     final_tokens = 260e9 
-    ckpt_path = None
     num_workers = 0 
+
+    max_grad_clip_norm=1.0
 
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
