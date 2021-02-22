@@ -4,3 +4,7 @@ data/
 temp*
 .ipynb_checkpoints*
 .*
+
+*.pt 
+
+input.txt

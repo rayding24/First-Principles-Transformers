@@ -34,7 +34,7 @@ class Trainer:
         torch.save(raw_model.state_dict(),ckpt_path)
 
     def train(self):
-        model, config = self.model, self.config
+        model, config = self.model.half(), self.config
         device = self.device
         raw_model = model.module if hasattr(self.model, 'module') else model # must we get module?
         # optimizer = raw_model.configure_
@@ -50,7 +50,7 @@ class Trainer:
             pbar = tqdm(enumerate(loader), total=len(loader)) if training_stage else enumerage(loader)
             for it, (x, y) in pbar:
 
-                x,y = x.to(device), y.to(device)
+                x,y = x.to(device).half(), y.to(device).half()
 
                 #model forward pass
                 with torch.set_grad_enabled(training_stage):
@@ -106,9 +106,9 @@ class Trainer:
                 test_loss = run_epoch(training_stage=False)
 
             is_curr_best_model = self.test_dataset is None or test_loss < best_loss
-            if is_curr_best_model:
-                # best_loss = test_loss 
-                self.save_checkpoint(f'./models/GPT_epoch_{epoch}.pt')
+            if self.config.ckpt_path is not None and is_curr_best_model:
+                best_loss = test_loss 
+                self.save_checkpoint(f'./models/GPT_epoch_{epoch}_test_loss_{round(test_loss, 3)}.pth')
         
 
 class TrainerConfig:
