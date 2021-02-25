@@ -1,7 +1,7 @@
 
 import re
 
-def basic_cleaning(input_path='haiku.txt', output_path='haiku_cleaned.txt', threshold=50):
+def basic_cleaning(input_path='data/haiku.txt', output_path='data/haiku_cleaned.txt', threshold=50):
     '''
     Ignore lines that exceeds threshold length for poem,
     and lines starting with non alphabet 
@@ -14,7 +14,7 @@ def basic_cleaning(input_path='haiku.txt', output_path='haiku_cleaned.txt', thre
                 else:
                     fdest.write(line)
 
-def charset_cleaning(input_path='haiku_cleaned.txt', output_path='haiku_cleaned1.txt', charset='#$@%&*()\[]~=1234567890'):
+def charset_cleaning(input_path='data/haiku_cleaned.txt', output_path='data/haiku_cleaned1.txt', charset='[#$@%&*():<>[\]{}~=1234567890]'):
     '''
     Ignore lines that contain special chars from charset
     '''

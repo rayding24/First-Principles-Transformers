@@ -47,7 +47,7 @@ class Trainer:
 
             losses = []
 
-            pbar = tqdm(enumerate(loader), total=len(loader)) if training_stage else enumerage(loader)
+            pbar = tqdm(enumerate(loader), total=len(loader)) if training_stage else enumerate(loader)
             for it, (x, y) in pbar:
 
                 x,y = x.to(device), y.to(device)
@@ -107,8 +107,8 @@ class Trainer:
 
             is_curr_best_model = self.test_dataset is None or test_loss < best_loss
             if is_curr_best_model:
-                # best_loss = test_loss 
-                self.save_checkpoint(f'./models/GPT_epoch_{epoch}.pt')
+                best_loss = test_loss 
+                self.save_checkpoint(f'./models/GPT_cifar10_epoch_{epoch}_loss_{round(test_loss)}.pt')
         
 
 class TrainerConfig:

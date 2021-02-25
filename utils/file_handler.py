@@ -1,5 +1,6 @@
 import shutil
 import os
+import wget
 
 def merge_txt_files(input_folder='data/forms/haiku', output_path='data/haiku.txt'):
     '''
@@ -16,8 +17,21 @@ def merge_txt_files(input_folder='data/forms/haiku', output_path='data/haiku.txt
                 fdest.write(b'\n') #start new line for next file
 
 
+def wget_file(output_path='data/haikuzao.txt', url='https://github.com/herval/creative_machines/blob/master/haikuzao/src/main/resources/haiku.txt'):
+    '''Get file from web and save to output path'''
+    # r = requests.get(url)
+
+    # with open(output_path, 'wb') as f:
+    #     f.write(r.content)
+    wget.download(url, output_path)
+
+
+
+
+
 
 if __name__ == '__main__':
-    merge_txt_files()
+    # merge_txt_files()
+    wget_file()
 
 
