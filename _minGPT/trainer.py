@@ -9,7 +9,7 @@ import numpy as np
 
 import torch.optim as optim
 from torch.utils.data.dataloader import DataLoader
-
+import torch.nn.functional as F
 logger = logging.getLogger('my logger')
 
 class Trainer:
@@ -54,8 +54,8 @@ class Trainer:
 
                 #model forward pass
                 with torch.set_grad_enabled(training_stage):
-                    logits, loss = model(x, y)
-                    loss = loss.mean() #multiple gpu avg
+                    logits = model(x, y)
+                    loss =  F.cross_entropy(x,y)#multiple gpu avg
                     losses.append(loss.item())
                 
                 if training_stage:
@@ -109,6 +109,8 @@ class Trainer:
             if is_curr_best_model:
                 best_loss = test_loss 
                 self.save_checkpoint(f'./models/GPT_cifar10_epoch_{epoch}_loss_{round(test_loss)}.pt')
+        
+
         
 
 class TrainerConfig:

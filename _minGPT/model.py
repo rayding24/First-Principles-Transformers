@@ -95,7 +95,7 @@ class GPT(nn.Module):
         
         # head
         self.ln = nn.LayerNorm(config.n_embd)
-        self.head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
+        self.head = nn.Linear(config.n_embd, 10, bias=False)
         self.block_size = config.block_size
 
         self.apply(self._init_weights)
@@ -118,7 +118,7 @@ class GPT(nn.Module):
     def forward(self, idx, targets=None):
         _, t = idx.size() # index for words
         
-        assert t <= self.block_size, 'cannot forward, model block size is exhausted, wtf does this mean???'
+        # assert t <= self.block_size, 'cannot forward, model block size is exhausted, wtf does this mean???'
         
         token_embeddings = self.tok_emb(idx) # index to vec
         positional_embeddings = self.pos_emb[:, :t, :] #wtf is this?? pos emb straight from Parameter??
@@ -126,14 +126,10 @@ class GPT(nn.Module):
         x = self.drop(x)
         x = self.blocks(x)
         x = self.ln(x)
-        logits = self.head(x) # what does this head do exactly??
-        
-        if targets is not None:
-            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
-        else:
-            loss = None  
+        x = torch.mean(x, dim=1)
+        logits = self.head(x)
             
-        return logits, loss 
+        return logits 
         
         
 class GPTConfig:
@@ -150,4 +146,6 @@ class GPTConfig:
         for k,v in kwargs.items():
             setattr(self, k, v)
             
+            
+
             
